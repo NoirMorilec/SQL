@@ -1,0 +1,32 @@
+WITH
+dsP AS
+(
+SELECT
+   point,
+   date,
+   SUM(out) OVER(PARTITION BY point ORDER BY date) balance,
+   MAX(date) OVER(PARTITION BY point) maxDate
+FROM
+   Outcome_o
+),
+dsP1 AS
+(
+SELECT
+  point,
+  date,
+  balance - 10000 balance,
+  MIN(date) OVER(PARTITION BY point) MIN
+FROM
+  dsP
+WHERE
+  balance >= 10000 OR
+  date = maxDate
+)
+SELECT
+  point,
+  date,
+  balance
+FROM 
+   dsP1
+WHERE
+   min = date

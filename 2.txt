@@ -1,0 +1,24 @@
+WITH 
+dsS AS
+(
+SELECT
+  c.country,
+  s.launched,
+  COUNT(s.launched) count
+FROM
+  Classes c
+  LEFT JOIN Ships s ON s.class = c.class and s.launched is not null
+GROUP BY 
+  c.country,
+  s.launched 
+)
+SELECT
+  s.country,  
+  IIF(MIN(s.launched) is null, NULL, MIN(s.count)),
+  MIN(s.launched)
+FROM
+  dsS s
+WHERE
+  s.count = (SELECT MAX(count) FROM dsS WHERE country = s.country)
+GROUP BY 
+  s.country
